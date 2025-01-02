@@ -1,0 +1,26 @@
+name: Auto Reply to Comments
+
+on:
+  issue_comment:
+    types: [created]
+
+jobs:
+  auto-reply:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Filter and Reply to Comments
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const triggerPhrases = ["can i work on this issue", "assign this to me"];
+            const commentBody = context.payload.comment.body.toLowerCase();
+
+            if (triggerPhrases.some(phrase => commentBody.includes(phrase))) {
+              await github.rest.issues.createComment({
+                issue_number: context.payload.issue.number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                body: "Please read the contribution guide before commenting.",
+              });
+            }
