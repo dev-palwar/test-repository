@@ -5,8 +5,7 @@ on:
     types: [created]
 
 permissions:
-  issues: write
-  pull_requests: write
+  issues: write  # Permission to interact with issues, including comment creation and deletion
 
 jobs:
   auto-reply-delete:
