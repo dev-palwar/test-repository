@@ -4,6 +4,9 @@ on:
   issue_comment:
     types: [created]
 
+permissions:
+  issues: write
+
 jobs:
   auto-reply:
     runs-on: ubuntu-latest
@@ -15,12 +18,13 @@ jobs:
           script: |
             const triggerPhrases = ["can i work on this issue", "assign this to me"];
             const commentBody = context.payload.comment.body.toLowerCase();
+            const commenter = context.payload.comment.user.login;
 
             if (triggerPhrases.some(phrase => commentBody.includes(phrase))) {
               await github.rest.issues.createComment({
                 issue_number: context.payload.issue.number,
                 owner: context.repo.owner,
                 repo: context.repo.repo,
-                body: "Please read the contribution guide before commenting.",
+                body: `@${commenter} Please read the contribution guide before commenting.`,
               });
             }
