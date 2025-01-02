@@ -1,4 +1,4 @@
-name: Auto Add Label for Claiming Issues
+name: Auto Reply and Delete Comments
 
 on:
   issue_comment:
@@ -6,13 +6,14 @@ on:
 
 permissions:
   issues: write
+  pull_requests: write
 
 jobs:
-  auto-label:
+  auto-reply-delete:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Filter and Add Label
+      - name: Filter, Reply to, and Delete Comments
         uses: actions/github-script@v6
         with:
           script: |
@@ -21,10 +22,18 @@ jobs:
             const commenter = context.payload.comment.user.login;
 
             if (triggerPhrases.some(phrase => commentBody.includes(phrase))) {
-              await github.rest.issues.addLabels({
+              // Delete the comment
+              await github.rest.issues.deleteComment({
+                comment_id: context.payload.comment.id,
+                owner: context.repo.owner,
+                repo: context.repo.repo
+              });
+
+              // Reply to the comment with guidelines
+              await github.rest.issues.createComment({
                 issue_number: context.payload.issue.number,
                 owner: context.repo.owner,
                 repo: context.repo.repo,
-                labels: ['awaiting-review']  # Add a label for claiming the issue
+                body: `@${commenter} Please read the contribution guide before commenting.`
               });
             }
