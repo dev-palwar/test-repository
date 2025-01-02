@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Filter and Reply to Comments
+      - name: Filter and Add Label
         uses: actions/github-script@v6
         with:
           script: |
@@ -21,10 +21,10 @@ jobs:
             const commenter = context.payload.comment.user.login;
 
             if (triggerPhrases.some(phrase => commentBody.includes(phrase))) {
-              await github.rest.issues.createComment({
+              await github.rest.issues.addLabels({
                 issue_number: context.payload.issue.number,
                 owner: context.repo.owner,
                 repo: context.repo.repo,
-                body: `@${commenter} Please read the contribution guide before commenting.`,
+                labels: ['needs-guidelines']  # Add a custom label
               });
             }
