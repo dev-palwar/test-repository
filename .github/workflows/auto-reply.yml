@@ -1,4 +1,4 @@
-name: Auto Reply to Comments
+name: Auto Add Label for Claiming Issues
 
 on:
   issue_comment:
@@ -8,7 +8,7 @@ permissions:
   issues: write
 
 jobs:
-  auto-reply:
+  auto-label:
     runs-on: ubuntu-latest
 
     steps:
@@ -25,6 +25,6 @@ jobs:
                 issue_number: context.payload.issue.number,
                 owner: context.repo.owner,
                 repo: context.repo.repo,
-                labels: ['needs-guidelines']  # Make sure this label exists in your repo
+                labels: ['awaiting-review']  # Add a label for claiming the issue
               });
             }
